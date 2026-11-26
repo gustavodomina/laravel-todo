@@ -13,7 +13,8 @@ una terminal. Nadie más tiene que ejecutar estos comandos por vos.
   1. Preparativos por única vez (verificación)
   2. Publicar un proyecto por primera vez
   3. Actualizaciones del día a día (add / commit / push)
-  4. Práctica real: subir los tests que faltan
+  4. Práctica real 1: subir cambios (PUSH) — completada el 2026-11-26
+  4B. Práctica real 2: traer cambios de la web (PULL)
   5. Comandos útiles para mirar el estado del repo
   6. Problemas típicos y soluciones
 
@@ -200,12 +201,17 @@ Ejemplos de buenos mensajes de commit:
 
 
 --------------------------------------------------------
-4. PRÁCTICA REAL: SUBIR LOS TESTS QUE FALTAN
+4. PRÁCTICA REAL 1: SUBIR CAMBIOS (PUSH) — COMPLETADA
 --------------------------------------------------------
 
-AHORA MISMO el repo laravel-todo tiene cambios sin subir: los tests
-que acabamos de escribir y los tutoriales nuevos. Es la oportunidad
-perfecta para practicar el flujo del día a día con cambios reales.
+ESTA PRÁCTICA YA LA HICISTE el 2026-11-26: subiste los tests de
+PHPUnit y los tutoriales con tu propio commit ("Primer_Commit_20261126").
+Queda acá documentada como modelo del flujo diario, para repetirla
+cada vez que tengas cambios nuevos.
+
+El repo laravel-todo tenía cambios sin subir: los tests recién
+escritos y los tutoriales nuevos. Era la oportunidad perfecta para
+practicar el flujo del día a día con cambios reales.
 
 Abrí la terminal (la de Laragon, parada en C:\laragon\www\laravel-todo)
 y seguí:
@@ -264,6 +270,78 @@ PASO 6 - Comprobar:
      y documentacion/ con los archivos nuevos.
 
 Si llegaste hasta acá con los 6 pasos, ya dominás el ciclo completo.
+
+
+--------------------------------------------------------
+4B. PRÁCTICA REAL 2: TRAER CAMBIOS DE LA WEB (PULL)
+--------------------------------------------------------
+
+El push sube cambios de tu PC a GitHub. El PULL hace el camino
+inverso: trae a tu PC los commits que se hicieron en otro lado (por
+ejemplo, editando archivos directo en la web de GitHub, o desde otra
+computadora).
+
+PRÁCTICA: crear un README.md en la web y traerlo a tu PC.
+
+PARTE 1 - En el navegador (crear el commit remoto)
+1) Entrá a https://github.com/gustavodomina/laravel-todo
+2) Clic en "Add file" (arriba a la derecha de la lista de archivos)
+   > "Create new file".
+3) Como nombre de archivo escribí: README.md
+4) En el cuerpo escribí algo como:
+
+       # Mis Tareas
+
+       To-Do app de aprendizaje con Laravel 12 + React + SQLite.
+
+       La documentación paso a paso está en la carpeta documentacion/.
+
+5) Clic en "Commit changes...", dejá el mensaje propuesto (o poné el
+   tuyo), verificá que diga "Commit directly to the main branch" y
+   confirmá.
+6) Volvé a la raíz del repo y comprobá que README.md ya aparece en
+   la lista de archivos.
+
+PARTE 2 - En la terminal de Laragon (traerlo a tu PC)
+Parado en C:\laragon\www\laravel-todo:
+
+1) Mirá el estado local ANTES de traer:
+
+       git status
+
+   OJO con lo que vas a ver: probablemente diga "up to date with
+   'origin/main'" aunque en la web acabes de commitear. NO es un
+   error: git status compara contra lo que tu PC SABE del remoto, y
+   tu PC todavía no se enteró del commit nuevo.
+
+2) Traé los cambios:
+
+       git pull
+
+   Respuesta esperada, más o menos:
+
+       Updating abc1234..def5678
+       Fast-forward
+        README.md | 5 +++++
+        create mode 100644 README.md
+
+   "Fast-forward" (avance rápido) significa que tu rama local no
+   tenía commits nuevos propios, así que git simplemente la avanzó
+   hasta el commit del remoto. Es el caso más simple de pull.
+
+3) Comprobá que llegó:
+
+       git log --oneline
+
+   Arriba de todo tiene que estar el commit "Create README.md".
+   Y en VSCodium, la carpeta del proyecto ya tiene README.md.
+
+CONCEPTO CLAVE: git es DISTRIBUIDO. Tu PC tiene una copia completa
+del historial; el remoto (GitHub) tiene otra. push y pull son los
+puentes que las sincronizan. Cuando hay cambios de los DOS lados a
+la vez, git intenta combinarlos automáticamente (merge); si tocan la
+misma línea del mismo archivo, se produce un CONFLICTO que hay que
+resolver a mano (ese es un tema para una próxima práctica).
 
 
 --------------------------------------------------------
@@ -327,6 +405,28 @@ PROBLEMA: al hacer push dice "git: 'credential-manager' is not a git
 
   (La línea con "" vacío es importante: resetea la lista antes de
   agregar, para que no quede ningún helper viejo colado.)
+
+  Verificar que se aplicó:
+
+      git config --local --get-all credential.helper
+
+  Debe mostrar 3 líneas: una en blanco, manager-core y manager.
+
+  PLAN B (lo que finalmente funcionó el 2026-11-26): los comandos de
+  arriba no se aplicaron en la terminal de Laragon (el archivo de
+  configuración quedó igual). La alternativa es editar a mano el
+  archivo oculto .git\config de la carpeta del proyecto (se puede
+  abrir con VSCodium) y dejar la sección [credential] exactamente
+  así:
+
+      [credential]
+          helper = 
+          helper = manager-core
+          helper = manager
+
+  Ojo: la primera línea "helper =" queda con el valor vacío (nada
+  después del igual). Guardar el archivo y reintentar el push.
+
   Después reintentar:
 
       git push -u origin main
@@ -384,3 +484,6 @@ RESUMEN DE BOLSILLO
       git add .           (preparar)
       git commit -m "..." (guardar la foto)
       git push            (subir a GitHub)
+
+  Si cambiaste algo en la web de GitHub (o en otra PC):
+      git pull            (traer los cambios remotos a tu PC)
