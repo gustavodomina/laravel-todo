@@ -1,16 +1,15 @@
 ========================================================
-TUTORIAL: GIT Y GITHUB DESDE LA TERMINAL DE VSCODIUM
+TUTORIAL: GIT Y GITHUB DESDE LA TERMINAL
 Proyecto ejemplo: laravel-todo (C:\laragon\www\laravel-todo)
 Repo: https://github.com/gustavodomina/laravel-todo
 Fecha: 2026-11-26
 ========================================================
 
 Este tutorial está pensado para que lo hagas VOS, paso a paso, desde
-la terminal integrada de VSCodium. Nadie más tiene que ejecutar estos
-comandos por vos.
+una terminal. Nadie más tiene que ejecutar estos comandos por vos.
 
 ÍNDICE
-  0. Abrir el proyecto y la terminal en VSCodium
+  0. Abrir la terminal (Laragon o VSCodium)
   1. Preparativos por única vez (verificación)
   2. Publicar un proyecto por primera vez
   3. Actualizaciones del día a día (add / commit / push)
@@ -20,36 +19,55 @@ comandos por vos.
 
 
 --------------------------------------------------------
-0. ABRIR EL PROYECTO Y LA TERMINAL EN VSCODIUM
+0. ABRIR LA TERMINAL (LARAGON O VSCODIUM)
 --------------------------------------------------------
 
-1) Abrí VSCodium.
-2) Menú File > Open Folder... (Archivo > Abrir carpeta) y elegí:
+IMPORTANTE SOBRE ESTA PC: git NO está instalado "de forma global"
+(no está en el PATH de Windows). El git que tenés es el que viene
+DENTRO de Laragon. Por eso:
 
-       C:\laragon\www\laravel-todo
+  - En la terminal integrada de VSCodium, el comando "git" puede no
+    ser reconocido, salvo que configures VSCodium para usar la
+    terminal de Laragon o agregues git al PATH.
+  - La opción que SIEMPRE funciona en esta PC es la TERMINAL DE
+    LARAGON (Cmder), que ya trae git listo para usar.
 
-   Importante: abrí la CARPETA del proyecto, no un archivo suelto.
-   Así la terminal que abras adentro ya va a estar parada en el
-   lugar correcto.
+OPCIÓN A - Terminal de Laragon (la recomendada en esta PC)
+1) Abrí el programa Laragon.
+2) Clic en el botón "Terminal" (o Ctrl + Alt + T). Se abre una
+   ventana oscura (Cmder) parada en C:\laragon\www, con una línea
+   parecida a:
 
-3) Abrí la terminal integrada:
-   - Atajo: Ctrl + Ñ (o Ctrl + ` en teclado en inglés, la tecla del
-     acento grave, arriba de Tab).
-   - O por menú: Terminal > New Terminal.
+       C:\laragon\www
+       λ
 
-   Abajo aparece un panel con una línea parecida a:
+3) Entrá a la carpeta del proyecto:
 
-       PS C:\laragon\www\laravel-todo>
+       cd laravel-todo
 
-   Eso significa que estás en la terminal y en la carpeta correcta.
-   Todo lo que sigue se escribe ahí, un comando por vez, apretando
-   Enter después de cada uno.
+   La línea ahora debería mostrar el proyecto y la rama, por
+   ejemplo:
 
-4) Comprobá que git funciona:
+       C:\laragon\www\laravel-todo (main -> origin)
+       λ
+
+OPCIÓN B - Terminal integrada de VSCodium
+1) Abrí VSCodium y luego File > Open Folder... > elegí
+   C:\laragon\www\laravel-todo (la CARPETA, no un archivo suelto).
+2) Abrí la terminal con Ctrl + Ñ (o Terminal > New Terminal).
+3) Probá "git --version". Si responde la versión, podés usarla.
+   Si dice que git no se reconoce, usá la OPCIÓN A.
+
+En cualquiera de las dos, comprobá que git funciona:
 
        git --version
 
-   Debería responder algo como "git version 2.52.0.windows.1".
+   En la terminal de Laragon responde "git version 2.37.3.windows.1"
+   (es el git que trae Laragon, más viejo pero suficiente para todo
+   lo de este tutorial).
+
+Todo lo que sigue se escribe en esa terminal, un comando por vez,
+apretando Enter después de cada uno.
 
 
 --------------------------------------------------------
@@ -189,7 +207,8 @@ AHORA MISMO el repo laravel-todo tiene cambios sin subir: los tests
 que acabamos de escribir y los tutoriales nuevos. Es la oportunidad
 perfecta para practicar el flujo del día a día con cambios reales.
 
-Abrí la terminal en VSCodium (proyecto laravel-todo) y seguí:
+Abrí la terminal (la de Laragon, parada en C:\laragon\www\laravel-todo)
+y seguí:
 
 PASO 1 - Ver qué cambió:
 
@@ -202,8 +221,9 @@ PASO 1 - Ver qué cambió:
        Untracked files:
            tests/Unit/TaskTest.php
            tests/Feature/TaskTest.php
-           documentacion/tutorial-tests.txt
-           documentacion/tutorial-git-terminal.txt
+           documentacion/tutorial-tests.md
+           documentacion/tutorial-git-terminal.md
+           documentacion/tutorial-credenciales.md
 
    "Untracked" = archivo nuevo que git todavía no sigue.
    "Not staged" = archivo conocido que tiene cambios sin preparar.
@@ -282,9 +302,38 @@ Usalos sin miedo:
 PROBLEMA: "git push" se queda colgado y no pasa nada.
   CAUSA: la ventana del "Credential Helper Selector" está abierta
   en algún lugar de la pantalla esperando un clic.
-  SOLUCIÓN: buscá la ventanita (a veces aparece detrás de VSCodium),
+  SOLUCIÓN: buscá la ventanita (a veces aparece detrás del editor),
   elegí "manager" y tildá "Always use this from now on". En
   laravel-todo ya quedó arreglado de forma local para este repo.
+
+PROBLEMA: al hacer push dice "git: 'credential-manager' is not a git
+  command. The most similar command is 'credential-manager-core'" y
+  después pide Username/Password en la terminal y falla con
+  "Invalid username or token. Password authentication is not
+  supported".
+  CAUSA: el git de Laragon es la versión 2.37 (2022) y su helper de
+  credenciales se llama "manager-core", pero el repo quedó
+  configurado con "manager" (el nombre moderno). Al no encontrar el
+  helper, git cae en pedir usuario y contraseña a mano, y GitHub ya
+  NO acepta contraseñas para operaciones de git (solo tokens).
+  SOLUCIÓN: configurar la lista de helpers con los DOS nombres, para
+  que funcione tanto con el git viejo de Laragon como con gits
+  modernos. Parado en la carpeta del proyecto, ejecutar:
+
+      git config --local --unset-all credential.helper
+      git config --local --add credential.helper ""
+      git config --local --add credential.helper manager-core
+      git config --local --add credential.helper manager
+
+  (La línea con "" vacío es importante: resetea la lista antes de
+  agregar, para que no quede ningún helper viejo colado.)
+  Después reintentar:
+
+      git push -u origin main
+
+  No debería pedir usuario ni contraseña: el token ya está guardado
+  en el Administrador de Credenciales de Windows desde el primer
+  push exitoso, y manager-core lo encuentra ahí.
 
 PROBLEMA: git push responde "! [rejected] ... (fetch first)".
   CAUSA: en GitHub hay commits que no tenés en tu PC (por ejemplo,
