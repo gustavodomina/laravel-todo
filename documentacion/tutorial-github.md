@@ -97,6 +97,8 @@ git commit -m "Aplicación inicial: gestor de tareas con Laravel 12 + React"
 
 ## 5. Crear el repositorio en GitHub y subirlo
 
+### Método A: todo desde la terminal con gh
+
 El comando que hace **todo de una** (crea el repo remoto + lo conecta + sube):
 
 ```bash
@@ -109,7 +111,40 @@ gh repo create laravel-todo --public --source=. --push
 - `--source=.` → "el repo local es esta carpeta en la que estoy parado".
 - `--push` → subí los commits inmediatamente después de crearlo.
 
-Listo. Abrí la URL que te muestra la terminal y vas a ver tu código en GitHub.
+### Método B: crear el repo en la web + git push (el que usamos en esta PC)
+
+Si `gh auth login` da problemas, este método funciona igual de bien:
+
+1. En el navegador: **https://github.com/new**
+   - Nombre: `laravel-todo`, visibilidad **Public**.
+   - **NO** tildar "Add a README" ni agregar .gitignore/license (el repo debe
+     quedar vacío para que el push inicial no genere conflictos).
+   - Clic en **Create repository**.
+2. En la terminal, conectar el repo local con el remoto y subir:
+
+```bash
+git remote add origin https://github.com/TU-USUARIO/laravel-todo.git
+git push -u origin main
+```
+
+3. Al hacer push, **Git Credential Manager (GCM)** abre el navegador para que
+   autorices a Git. Una vez autorizado, queda guardado y los próximos push no
+   piden nada.
+
+> **Problema conocido en esta PC**: el git que venía configurado usaba el
+> helper `helper-selector`, que abre una ventanita gráfica para elegir cómo
+> autenticar y a veces se queda colgado (el push parece trabado sin error).
+> Solución que aplicamos, solo para este repo:
+>
+> ```bash
+> git config --add credential.helper ""        # la cadena vacía resetea la lista de helpers
+> git config --add credential.helper manager   # usa directamente GCM
+> ```
+>
+> Si un `git push` queda colgado más de un minuto sin mostrar nada, revisá
+> esto: `git config --get-all credential.helper`.
+
+Listo. Abrí la URL de tu repo y vas a ver el código en GitHub.
 
 ## 6. El día a día: subir cambios futuros
 
